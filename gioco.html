@@ -9,8 +9,8 @@
       font-family: 'Arial', sans-serif;
       text-align: center;
       margin: 10px;
-      background-color: #333; /* Sfondo grigio scuro */
-      color: white; /* Colore del testo generale */
+      background-color: #333;
+      color: white;
     }
     #counterContainer {
       display: flex;
@@ -21,34 +21,30 @@
       font-size: 24px;
       margin-bottom: 10px;
     }
-    #incrementButton {
+    button {
       padding: 10px 20px;
       font-size: 16px;
       cursor: pointer;
-      background-color: #555; /* Colore di sfondo del pulsante */
-      color: white; /* Colore del testo del pulsante */
+      background-color: #555;
+      color: white;
+      margin-top: 10px;
+      display: block;
+      margin-bottom: 10px;
+      margin-left: auto;
+      margin-right: auto;
     }
     #goldCount {
       font-size: 18px;
       margin-top: 10px;
-      color: yellow; /* Colore giallo per la scritta "Lingotti d'oro" */
+      color: yellow;
     }
-    #buyGoldButton {
-      padding: 10px 20px;
+    #troopCount {
       font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      background-color: #555; /* Colore di sfondo del pulsante "Compra lingotto" */
-      color: white; /* Colore del testo del pulsante "Compra lingotto" */
-    }
-    #priceLabel {
-      font-size: 14px;
       margin-top: 10px;
     }
-    #finalMessage {
+    #armyPower {
       font-size: 16px;
-      color: rgb(43, 193, 247); /* Colore azzurro per il messaggio finale */
-      margin-top: 20px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -60,109 +56,182 @@
     <div id="counter">0</div>
   </div>
 
-  <button id="incrementButton" onclick="incrementa()">Clicca per incrementare</button>
+  <button id="incrementButton">Clicca per incrementare</button>
 
   <div id="goldCount">Lingotti d'oro: 0</div>
-  <button id="buyGoldButton" onclick="buyGold()">Compra lingotto</button>
-  <div id="priceLabel">Prezzo lingotto: 10 clic</div>
+  <button id="buyGoldButton">Compra lingotto</button>
+
+  <button id="buySoldiersButton">Compra 5 Soldati (1 lingotto)</button>
+  <button id="buyTankButton">Compra 1 Carroarmato (10 lingotti)</button>
+  <button id="buyPlaneButton">Compra 1 Aereo (7 lingotti)</button>
+
+  <div id="troopCount">Soldati: 0 | Carri armati: 0 | Aerei: 0</div>
+
+  <div id="armyPower">Potenza esercito: 0</div>
 
   <ul id="playerList"></ul>
 
-  <div id="finalMessage">Acquista un lingotto per ottenere il tuo vecchio punteggio.</div>
-
   <script>
-    var goldCount = 0; // Inizializza il contatore di lingotti d'oro
+    var goldCount = 0;
+    var soldiersCount = 0;
+    var tanksCount = 0;
+    var planesCount = 0;
 
-    // Funzione per incrementare il contatore
     function incrementa() {
-      // Recupera il valore corrente del contatore
       var counterValue = getPlayerScore();
-
-      // Incrementa il contatore di 1
       counterValue++;
-
-      // Aggiorna il testo del contatore
       document.getElementById('counter').innerText = counterValue;
-
-      // Se il contatore raggiunge 10, mostra il pulsante "Compra lingotto"
-      if (counterValue === 10) {
+      
+      if (counterValue >= 10) {
         document.getElementById('buyGoldButton').style.display = 'inline-block';
       }
 
-      // Salva il punteggio nei localStorage
       localStorage.setItem("playerScore", counterValue);
-
-      // Aggiorna la lista dei giocatori
       updatePlayerList();
+      updateTroopCount();
+      updateArmyPower();
     }
 
-    // Funzione per acquistare un lingotto d'oro
     function buyGold() {
-      // Recupera il valore corrente del contatore
       var counterValue = getPlayerScore();
 
-      // Se il giocatore ha almeno 10 clic, esegui l'acquisto
       if (counterValue >= 10) {
-        // Riduci il contatore di 10 clic
         counterValue -= 10;
-
-        // Incrementa il contatore di lingotti d'oro
         goldCount++;
-
-        // Aggiorna il testo del contatore
         document.getElementById('counter').innerText = counterValue;
-
-        // Aggiorna il testo del contatore di lingotti d'oro
         updateGoldCount();
+        updateTroopCount();
+        updateArmyPower();
       }
 
-      // Salva i progressi nei localStorage
       localStorage.setItem("playerScore", counterValue);
       localStorage.setItem("goldCount", goldCount);
-
-      // Aggiorna la lista dei giocatori
       updatePlayerList();
     }
 
-    // Funzione per aggiornare il testo del contatore di lingotti d'oro
+    function buySoldiers() {
+      var counterValue = getPlayerScore();
+
+      if (goldCount >= 1) {
+        counterValue += 5;
+        goldCount -= 1;
+        soldiersCount += 5;
+        document.getElementById('counter').innerText = counterValue;
+        updateGoldCount();
+        updateTroopCount();
+        updateArmyPower();
+      }
+
+      localStorage.setItem("playerScore", counterValue);
+      localStorage.setItem("goldCount", goldCount);
+      localStorage.setItem("soldiersCount", soldiersCount);
+      updatePlayerList();
+    }
+
+    function buyTank() {
+      var counterValue = getPlayerScore();
+
+      if (goldCount >= 10) {
+        counterValue++;
+        goldCount -= 10;
+        tanksCount++;
+        document.getElementById('counter').innerText = counterValue;
+        updateGoldCount();
+        updateTroopCount();
+        updateArmyPower();
+      }
+
+      localStorage.setItem("playerScore", counterValue);
+      localStorage.setItem("goldCount", goldCount);
+      localStorage.setItem("tanksCount", tanksCount);
+      updatePlayerList();
+    }
+
+    function buyPlane() {
+      var counterValue = getPlayerScore();
+
+      if (goldCount >= 7) {
+        counterValue++;
+        goldCount -= 7;
+        planesCount++;
+        document.getElementById('counter').innerText = counterValue;
+        updateGoldCount();
+        updateTroopCount();
+        updateArmyPower();
+      }
+
+      localStorage.setItem("playerScore", counterValue);
+      localStorage.setItem("goldCount", goldCount);
+      localStorage.setItem("planesCount", planesCount);
+      updatePlayerList();
+    }
+
     function updateGoldCount() {
       document.getElementById('goldCount').innerText = "Lingotti d'oro: " + goldCount;
     }
 
-    // Funzione per ottenere il punteggio dal localStorage
+    function updateTroopCount() {
+      document.getElementById('troopCount').innerText = "Soldati: " + soldiersCount + " | Carri armati: " + tanksCount + " | Aerei: " + planesCount;
+    }
+
+    function updateArmyPower() {
+      var armyPower = soldiersCount * 2 + tanksCount * 25 + planesCount * 20;
+      document.getElementById('armyPower').innerText = "Potenza esercito: " + armyPower;
+    }
+
     function getPlayerScore() {
       return parseInt(localStorage.getItem("playerScore")) || 0;
     }
 
-    // Funzione per ottenere il contatore di lingotti d'oro dal localStorage
     function getGoldCount() {
       return parseInt(localStorage.getItem("goldCount")) || 0;
     }
 
-    // Funzione per aggiornare la lista dei giocatori
+    function getSoldiersCount() {
+      return parseInt(localStorage.getItem("soldiersCount")) || 0;
+    }
+
+    function getTanksCount() {
+      return parseInt(localStorage.getItem("tanksCount")) || 0;
+    }
+
+    function getPlanesCount() {
+      return parseInt(localStorage.getItem("planesCount")) || 0;
+    }
+
     function updatePlayerList() {
       var playerList = document.getElementById('playerList');
       var playerScore = getPlayerScore();
 
-      // Aggiungi o aggiorna l'elemento della lista
       var existingPlayerItem = document.getElementById('playerItem');
       if (existingPlayerItem) {
-        existingPlayerItem.innerText = "" + playerScore;
+        existingPlayerItem.innerText = playerScore.toString();
       } else {
-        var playerItem = document.createElement();
+        var playerItem = document.createElement('div');
         playerItem.id = 'playerItem';
-        playerItem.innerText = "Giocatore Corrente: " + playerScore;
+        playerItem.innerText = playerScore.toString();
         document.body.appendChild(playerItem);
       }
     }
 
-    // Aggiorna la lista dei giocatori e il contatore di lingotti d'oro al caricamento della pagina
     window.onload = function () {
       goldCount = getGoldCount();
+      soldiersCount = getSoldiersCount();
+      tanksCount = getTanksCount();
+      planesCount = getPlanesCount();
+
       updatePlayerList();
       updateGoldCount();
-      document.getElementById('counter').innerText = getPlayerScore(); // Aggiorna il punteggio del giocatore
+      updateTroopCount();
+      updateArmyPower();
+      document.getElementById('counter').innerText = getPlayerScore();
     };
+
+    document.getElementById('incrementButton').addEventListener('click', incrementa);
+    document.getElementById('buyGoldButton').addEventListener('click', buyGold);
+    document.getElementById('buySoldiersButton').addEventListener('click', buySoldiers);
+    document.getElementById('buyTankButton').addEventListener('click', buyTank);
+    document.getElementById('buyPlaneButton').addEventListener('click', buyPlane);
   </script>
 
 </body>
